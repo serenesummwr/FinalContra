@@ -1,0 +1,53 @@
+
+body {
+	background-color: #0b1026;
+	-fx-background-color: linear-gradient(to bottom, #0b1026 0%, #151a38 60%, #06070d 100%);
+}
+
+.label {
+	color: #f8f4d6;
+	-fx-text-fill: #f8f4d6;
+	font-size: 2.4em;
+	-fx-font-size: 2.4em;
+	font-weight: bold;
+	-fx-font-weight: bold;
+	font-family: "Press Start 2P", "OCR A Std", "Monospaced";
+	-fx-font-family: "Press Start 2P", "OCR A Std", "Monospaced";
+	-fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.45), 16, 0.35, 0, 0);
+}
+
+.button {
+	background-color: #1b3a8a;
+	-fx-background-color: linear-gradient(to bottom, #1b3a8a 0%, #152b66 55%, #07133b 100%);
+	border-color: #34d6ff;
+	-fx-border-color: #34d6ff;
+	border-width: 3px;
+	-fx-border-width: 3px;
+	border-radius: 0;
+	-fx-border-radius: 0;
+	color: #f4f8ff;
+	-fx-text-fill: #f4f8ff;
+	font-weight: bold;
+	-fx-font-weight: bold;
+	font-size: 1.8em;
+	-fx-font-size: 1.8em;
+	font-family: "Press Start 2P", "OCR A Std", "Monospaced";
+	-fx-font-family: "Press Start 2P", "OCR A Std", "Monospaced";
+	padding: 12px 20px;
+	-fx-padding: 12px 20px;
+	-fx-effect: dropshadow(gaussian, rgba(52, 214, 255, 0.4), 12, 0.4, 0, 0);
+}
+
+.button:hover {
+	background-color: #2987ff;
+	-fx-background-color: linear-gradient(to bottom, #2987ff 0%, #1f67c8 50%, #09204f 100%);
+	border-color: #7bfffd;
+	-fx-border-color: #7bfffd;
+	-fx-effect: dropshadow(gaussian, rgba(123, 255, 253, 0.6), 16, 0.4, 0, 0);
+}
+
+.button:pressed {
+	background-color: #0f2557;
+	-fx-background-color: linear-gradient(to bottom, #0f2557 0%, #0a1739 100%);
+	-fx-translate-y: 1px;
+}

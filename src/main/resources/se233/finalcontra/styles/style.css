@@ -1,0 +1,79 @@
+
+.root {
+	background-color: #10080f;
+	-fx-background-color: linear-gradient(to bottom, #10080f 0%, #20071e 40%, #09060e 100%);
+	border-color: #33112b;
+	-fx-border-color: #33112b;
+	border-width: 4px;
+	-fx-border-width: 4px;
+	padding: 24px;
+	-fx-padding: 24px;
+}
+
+#title {
+	color: #fffdc1;
+	-fx-text-fill: #fffdc1;
+	font-size: 3.2em;
+	-fx-font-size: 3.2em;
+	font-weight: bold;
+	-fx-font-weight: bold;
+	font-family: "Press Start 2P", "OCR A Std", "Monospaced";
+	-fx-font-family: "Press Start 2P", "OCR A Std", "Monospaced";
+	-fx-effect: dropshadow(gaussian, rgba(255, 120, 0, 0.45), 20, 0.4, 0, 0);
+}
+
+.button {
+	background-color: #ff4238;
+	-fx-background-color: linear-gradient(to bottom, #ff4238 0%, #b31416 60%, #4a090f 100%);
+	-fx-background-insets: 0, 4;
+	-fx-background-radius: 0;
+	border-color: #ffb341;
+	-fx-border-color: #ffb341;
+	border-width: 3px;
+	-fx-border-width: 3px;
+	border-radius: 0;
+	-fx-border-radius: 0;
+	color: #f7f9ff;
+	-fx-text-fill: #f7f9ff;
+	font-weight: bold;
+	-fx-font-weight: bold;
+	font-size: 1.8em;
+	-fx-font-size: 1.8em;
+	font-family: "Press Start 2P", "OCR A Std", "Monospaced";
+	-fx-font-family: "Press Start 2P", "OCR A Std", "Monospaced";
+	padding: 14px 22px;
+	-fx-padding: 14px 22px;
+	-fx-effect: dropshadow(gaussian, rgba(255, 180, 65, 0.5), 12, 0.4, 0, 0);
+}
+
+#stageButton {
+	font-size: 1.1em;
+	-fx-font-size: 1.1em;
+}
+
+.button:hover {
+	background-color: #ff6f3c;
+	-fx-background-color: linear-gradient(to bottom, #ff6f3c 0%, #d92323 60%, #4a090f 100%);
+	border-color: #ffe780;
+	-fx-border-color: #ffe780;
+	-fx-effect: dropshadow(gaussian, rgba(255, 231, 128, 0.7), 16, 0.45, 0, 0);
+}
+
+.button:pressed {
+	background-color: #9e1d23;
+	-fx-background-color: linear-gradient(to bottom, #9e1d23 0%, #6f0f15 100%);
+	-fx-translate-y: 1px;
+}
+
+.dialog-pane {
+	border-color: #ff4238;
+	-fx-border-color: #ff4238;
+	border-width: 3px;
+	-fx-border-width: 3px;
+	background-color: rgba(12, 6, 18, 0.92);
+	-fx-background-color: rgba(12, 6, 18, 0.92);
+	font-family: "Press Start 2P", "OCR A Std", "Monospaced";
+	-fx-font-family: "Press Start 2P", "OCR A Std", "Monospaced";
+	color: #f7f9ff;
+	-fx-text-fill: #f7f9ff;
+}

@@ -1,0 +1,63 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+.Spotlight-V100
+.Trashes
+._*
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code
+.vscode/
+
+# Eclipse (just in case)
+.project
+.classpath
+.settings/
+.apt_generated/
+.factorypath
+
+# Java
+*.class
+
+# Logs and JVM crash logs
+*.log
+logs/
+hs_err_pid*
+replay_pid*
+
+# Maven build output and transient files
+target/
+# Some projects generate this at repo root
+generated-sources/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Keep Maven Wrapper scripts and JAR if present
+!mvnw
+!mvnw.cmd
+!.mvn/wrapper/maven-wrapper.jar
+
+# Test/coverage artifacts (often inside target/, but safe to ignore)
+surefire-reports/
+failsafe-reports/
+site/
+*.exec
+
+# Editor swap/temp files
+*.swp
+*.swo
+*~
