@@ -29,6 +29,7 @@ public class SecondStage extends GameStage {
 		background.setFitHeight(HEIGHT);
 		platforms = new ArrayList<Platform>();
 		player = new Player(60, 244 ,KeyCode.A, KeyCode.D, KeyCode.W, KeyCode.S);
+		player.setCurrentStage(this);
 		player.respawn();
 		Platform upperLeftCliff = new Platform(341, 0, 308, true);
 		Platform midBridge = new Platform(310, 210, 463, false);

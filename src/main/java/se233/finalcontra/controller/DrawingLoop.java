@@ -21,6 +21,7 @@ import javafx.scene.control.Alert.AlertType;
 import se233.finalcontra.Launcher;
 import se233.finalcontra.model.*;
 import se233.finalcontra.model.Boss.FirstStageBoss;
+import se233.finalcontra.model.Boss.JavaBoss;
 
 public class DrawingLoop implements Runnable {	
 	public static List<Effect> effects = new ArrayList<>();
@@ -286,12 +287,15 @@ public class DrawingLoop implements Runnable {
 				}
 			}
 			return;
-			} else if (gameStage instanceof SecondStage) {
-				gameStage.getPlayer().isCollided(gameStage, 250);
+		} else if (gameStage instanceof SecondStage) {
+			gameStage.getPlayer().isCollided(gameStage, 250);
 			if (GameStage.totalMinions <= 0 && !GameStage.bossPhase) {
 				GameStage.bossPhase = true;
 			}
 			if (GameStage.bossPhase) {
+				if (gameStage.getBoss() instanceof JavaBoss javaBoss && !javaBoss.isSpawned()) {
+					javaBoss.spawn();
+				}
 				if (gameStage.getBoss() != null && gameStage.getBoss().isAlive()) {
 					gameStage.getBoss().update();
 				}

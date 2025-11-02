@@ -18,6 +18,7 @@ public class JavaBoss extends Boss{
     private GameStage gameStage;
     private final Enemy Head;
     private int spawnAnimationTimer = 0;
+    private boolean spawned = false;
 
     public JavaBoss(int xPos, int yPos , int Height, int Width, GameStage gameStage) {
         super(xPos, yPos, (int) Math.round(Width * SIZE_MULTIPLIER), (int) Math.round(Height * SIZE_MULTIPLIER), 20000);
@@ -32,14 +33,13 @@ public class JavaBoss extends Boss{
         this.gameStage = gameStage;
 
         getWeakPoints().add(Head);
-        GameLoop.enemies.add(Head);
-        javafx.application.Platform.runLater(() -> {
-            this.getChildren().addAll(Head);
-        });
     }
 
     @Override
     protected void handleAttackingState() {
+        if (!spawned) {
+            return;
+        }
         if (Head.isAlive()) {
             spawnEnemy();
             if (getSpawnAnimationTimer() > 0) {
@@ -53,6 +53,9 @@ public class JavaBoss extends Boss{
     }
 
     private void spawnEnemy() {
+        if (!spawned) {
+            return;
+        }
 
         if (enemyTimer > 0) {
             enemyTimer--;
@@ -96,5 +99,27 @@ public class JavaBoss extends Boss{
         if (spawnAnimationTimer > 0) {
             spawnAnimationTimer--;
         }
+    }
+
+    public void spawn() {
+        if (spawned) {
+            return;
+        }
+        spawned = true;
+        if (!GameLoop.enemies.contains(Head)) {
+            GameLoop.enemies.add(Head);
+        }
+        Head.setTranslateX(0);
+        Head.setTranslateY(0);
+        javafx.application.Platform.runLater(() -> {
+            if (!this.getChildren().contains(Head)) {
+                this.getChildren().add(Head);
+            }
+            Head.setVisible(true);
+        });
+    }
+
+    public boolean isSpawned() {
+        return spawned;
     }
 }

@@ -57,6 +57,7 @@ public class FirstStage extends GameStage {
         int spawnX = farLeftPlatform.getxPos() + 20;
         int spawnY = farLeftPlatform.getyPos() - 64;
         player = new Player(spawnX, spawnY, KeyCode.A, KeyCode.D, KeyCode.W, KeyCode.S);
+        player.setCurrentStage(this);
 
         double xScale = WIDTH / ImageAssets.FIRST_STAGE.getWidth();
         double yScale = HEIGHT / ImageAssets.FIRST_STAGE.getHeight();
@@ -91,9 +92,9 @@ public class FirstStage extends GameStage {
 
         boss = stageFourBoss;
 
-        FirstStageMinion leftMinion = new FirstStageMinion(
-            farLeftPlatform.getxPos() + 40,
-            farLeftPlatform.getyPos() - 64
+        FirstStageMinion groundMinion = new FirstStageMinion(
+            groundPlatform.getxPos() + groundPlatform.getPaneWidth() - 120,
+            groundPlatform.getyPos() - 64
         );
         FirstStageMinion centerMinion = new FirstStageMinion(
             centerPlatePlatform.getxPos() + 90,
@@ -104,7 +105,7 @@ public class FirstStage extends GameStage {
             rightSmallPlatform.getyPos() - 64
         );
 
-        List<FirstStageMinion> minions = List.of(leftMinion, centerMinion, rightMinion);
+        List<FirstStageMinion> minions = List.of(groundMinion, centerMinion, rightMinion);
         GameLoop.enemies.addAll(minions);
         GameLoop.enemies.add(turret);
         totalMinions = minions.size();
@@ -112,7 +113,7 @@ public class FirstStage extends GameStage {
         getChildren().addAll(background,
             farLeftPlatform, midBridgePlatform, leftUpperPlatform, rightUpperPlatform,
             centerPlatePlatform, rightSmallPlatform, groundPlatform,
-            boss, leftMinion, centerMinion, rightMinion, turret, player,
+            boss, groundMinion, centerMinion, rightMinion, turret, player,
             livesLabel, scoreLabel);
 
         player.respawn();

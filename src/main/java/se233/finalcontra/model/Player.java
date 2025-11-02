@@ -98,6 +98,7 @@ public class Player extends Pane {
 	public static int spawnProtectionTimer = 200;
 	
 	private PlayerState playerState;
+	private GameStage currentStage;
 	
 	public Player(int xPos, int yPos, KeyCode leftKey, KeyCode rightKey, KeyCode upKey, KeyCode downKey) {
 		this.playerState = PlayerState.IDLE;
@@ -174,6 +175,7 @@ public class Player extends Pane {
 		this.isJumping = false;
 		this.isDying = false;
 		this.setState(PlayerState.IDLE);
+		refreshLivesLabel();
 		SoundController.getInstance().playRespawnSound();
 	}
 	
@@ -184,6 +186,7 @@ public class Player extends Pane {
 		lives--;
 		isDying = true;
 		this.setState(PlayerState.DIE);
+		refreshLivesLabel();
 		SoundController.getInstance().playPlayerDieSound();
 		if (lives <= 0) {
 			javafx.application.Platform.runLater(() -> {
@@ -470,6 +473,11 @@ public class Player extends Pane {
 	public int getLives() {
 		return this.lives;
 	}
+
+	public void setCurrentStage(GameStage stage) {
+		this.currentStage = stage;
+		refreshLivesLabel();
+	}
 	
 	public KeyCode getLeftKey() {
 		return this.leftKey;
@@ -649,6 +657,14 @@ public class Player extends Pane {
 
 	public KeyCode getSwitchBulletKey() {
 		return switchBulletKey;
+	}
+
+	private void refreshLivesLabel() {
+		if (currentStage == null) {
+			return;
+		}
+		int remainingLives = lives;
+		javafx.application.Platform.runLater(() -> currentStage.getLivesLabel().setText("Lives: " + remainingLives));
 	}
 	
 }
