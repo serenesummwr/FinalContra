@@ -77,7 +77,7 @@ public class Launcher extends Application {
 	    			case 1 -> new SecondStage();
 				default -> throw new IllegalArgumentException("Unexpected value: " + index);
 			};
-        		currentScene = new Scene(gameStage, GameStage.WIDTH, GameStage.HEIGHT);
+				currentScene = new Scene(gameStage, GameStage.WIDTH, GameStage.HEIGHT);
         		currentScene.setOnKeyPressed(e -> {
         			if (e.getCode() == KeyCode.ESCAPE) {
         				GameLoop.pause();
@@ -97,9 +97,10 @@ public class Launcher extends Application {
         			} else {
         				gameStage.getKeys().add(e.getCode());
         			}
-    				if (e.getCode() == gameStage.getPlayer().getCheatKey()) {
-    					CheatManager.getInstance().toggleCheats();
-    				}
+					// Toggle Cheats: F1 (existing) or Shift + C (new convenience shortcut)
+					if (e.getCode() == gameStage.getPlayer().getCheatKey() || (e.getCode() == KeyCode.C && e.isShiftDown())) {
+						CheatManager.getInstance().toggleCheats();
+					}
         		});
         		currentScene.setOnKeyReleased(e -> {
         			gameStage.getKeys().remove(e.getCode());
