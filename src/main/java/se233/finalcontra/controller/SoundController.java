@@ -1,7 +1,7 @@
 package se233.finalcontra.controller;
 
 import javafx.scene.media.AudioClip;
-import se233.finalcontra.util.ResourceUtils;
+import se233.finalcontra.Launcher;
 
 public class SoundController {
 	private static SoundController instance;
@@ -14,6 +14,7 @@ public class SoundController {
 	private AudioClip proneSound;
 	private AudioClip winSound;
 	private AudioClip javaDieSound;
+	private AudioClip canDieSound;
 	private AudioClip javaAttackSound;
 	private AudioClip startTheme;
 	// Theme music used for all stages
@@ -24,8 +25,12 @@ public class SoundController {
 	private AudioClip blockHitSound;
 
 	private static AudioClip loadClip(String path) {
-		// Let MissingAssetException propagate to the global handler in Launcher
-		return ResourceUtils.loadAudioClip(path);
+		var url = Launcher.class.getResource(path);
+		if (url == null) {
+			System.err.println("[SoundController] Missing resource: " + path);
+			return null;
+		}
+		return new AudioClip(url.toString());
 	}
 	
     public void stopAllSounds() {
@@ -38,6 +43,7 @@ public class SoundController {
         if (proneSound != null) proneSound.stop();
         if (winSound != null) winSound.stop();
         if (javaDieSound != null) javaDieSound.stop();
+        if (canDieSound != null) canDieSound.stop();
         if (javaAttackSound != null) javaAttackSound.stop();
         if (startTheme != null) startTheme.stop();
 		if (minecraftTheme != null) minecraftTheme.stop();
@@ -56,9 +62,10 @@ public class SoundController {
 		proneSound = loadClip("assets/Sounds/proneSound.mp3");
 		winSound = loadClip("assets/Sounds/winSound.mp3");
 		javaDieSound = loadClip("assets/Sounds/javaDieSound.mp3");
+		canDieSound = loadClip("assets/Sounds/flyingDieSound.mp3");
 		javaAttackSound = loadClip("assets/Sounds/javaAttackSound.mp3");
 		loseSound = loadClip("assets/Sounds/loseSound.mp3");
-		respawnSound = loadClip("assets/Sounds/respawnSound.mp3");
+		respawnSound = loadClip("assets/Sounds/respawnSound.mp3");;
 		laserSound = loadClip("assets/Sounds/laser.mp3");
 		// Global theme for all stages
 		minecraftTheme = loadClip("assets/Sounds/minecraftSound.mp3");
@@ -111,6 +118,10 @@ public class SoundController {
 	
 	public void playJavaDieSound() {
 		if (javaDieSound != null) javaDieSound.play();
+	}
+	
+	public void playCanDieSound() {
+		if (canDieSound != null) canDieSound.play();
 	}
 	
 	public void playJavaAttackSound() {
