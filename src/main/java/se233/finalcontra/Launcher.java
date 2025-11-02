@@ -3,6 +3,8 @@ package se233.finalcontra;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -15,6 +17,9 @@ import se233.finalcontra.controller.GameLoop;
 import se233.finalcontra.controller.SoundController;
 import se233.finalcontra.controller.CheatManager;
 import se233.finalcontra.model.Boss.FirstStageBoss;
+import se233.finalcontra.model.Boss.ThirdBoss;
+import se233.finalcontra.exception.MissingAssetException;
+import se233.finalcontra.exception.LoopInterruptedException;
 import se233.finalcontra.view.GameStages.ThirdStage;
 import se233.finalcontra.view.MainMenu;
 import se233.finalcontra.view.GameStages.GameStage;
@@ -34,9 +39,49 @@ public class Launcher extends Application {
 	private static DrawingLoop currentDrawingLoop = null;
 	private static Rectangle fadeOverlay = null;
 	
+	private static void handleFatalAssetError(MissingAssetException exception) {
+		Runnable showDialog = () -> {
+			System.err.println("[Launcher] " + exception.getMessage());
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Missing Asset");
+			alert.setHeaderText("Required game asset is missing");
+			alert.setContentText(exception.getMessage());
+			alert.showAndWait();
+			Platform.exit();
+		};
+		if (Platform.isFxApplicationThread()) {
+			showDialog.run();
+		} else {
+			Platform.runLater(showDialog);
+		}
+	}
+
+	private static void ExceptionHandler() {
+		Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+			// Unwrap common wrapper to identify root cause type
+			Throwable cause = throwable.getCause() != null ? throwable.getCause() : throwable;
+			if (cause instanceof MissingAssetException mae) {
+				handleFatalAssetError(mae);
+				return;
+			}
+			if (cause instanceof LoopInterruptedException) {
+				System.err.println("[GlobalHandler] Loop interrupted on " + thread.getName());
+				return; // Non-fatal: loop threads will stop gracefully
+			}
+			// Fallback: print stacktrace for unexpected errors
+			throwable.printStackTrace();
+		});
+	}
+	
     @Override
     public void start(Stage stage) {
-    	menu = new MainMenu();
+    	ExceptionHandler();
+    	try {
+    		menu = new MainMenu();
+    	} catch (MissingAssetException e) {
+    		handleFatalAssetError(e);
+    		return;
+    	}
     	menuScene = new Scene(menu, GameStage.WIDTH, GameStage.HEIGHT);
     	currentScene = menuScene;
     	stage.setScene(menuScene);
@@ -73,12 +118,18 @@ public class Launcher extends Application {
         		}
         		
         		currentStageIndex = index;
-			GameStage gameStage = switch (index) {
-	    			case 0 -> new FirstStage();
-	    			case 1 -> new SecondStage();
-					case 2 -> new ThirdStage();
-				default -> throw new IllegalArgumentException("Unexpected value: " + index);
-			};
+        		GameStage gameStage;
+        		try {
+        			gameStage = switch (index) {
+        				case 0 -> new FirstStage();
+        				case 1 -> new SecondStage();
+        				case 2 -> new ThirdStage();
+        				default -> throw new IllegalArgumentException("Unexpected value: " + index);
+        			};
+        		} catch (MissingAssetException e) {
+        			handleFatalAssetError(e);
+        			return;
+        		}
 				currentScene = new Scene(gameStage, GameStage.WIDTH, GameStage.HEIGHT);
         		currentScene.setOnKeyPressed(e -> {
         			if (e.getCode() == KeyCode.ESCAPE) {
@@ -87,6 +138,8 @@ public class Launcher extends Application {
         			if (e.getCode() == KeyCode.H) {
         				if (gameStage.getBoss() instanceof FirstStageBoss stageFourBoss) {
         					stageFourBoss.toggleHitboxOutline();
+        				} else if (gameStage.getBoss() instanceof ThirdBoss thirdBoss) {
+        					thirdBoss.toggleHitboxOutline();
         				}
         				return;
         			}
@@ -169,11 +222,11 @@ public class Launcher extends Application {
             	if (currentDrawingLoop != null) {
             		currentDrawingLoop.stop();
             		currentDrawingThread = null;
-            	}
-            	
-            	currentStage = null;
-                primaryStage.setScene(menuScene);
-                currentScene = menuScene;
+        	}
+        	
+        	currentStage = null;
+            primaryStage.setScene(menuScene);
+            currentScene = menuScene;
                 
         		Rectangle fadeInOverlay = new Rectangle(0, 0, GameStage.WIDTH, GameStage.HEIGHT);
                 fadeInOverlay.setFill(Color.BLACK);

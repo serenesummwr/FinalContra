@@ -1,7 +1,7 @@
 package se233.finalcontra.model;
 
 import javafx.scene.image.Image;
-import se233.finalcontra.Launcher;
+import se233.finalcontra.util.ResourceUtils;
 
 public class ImageAssets {
 	private static final int PLAYER_FRAME_WIDTH = 64;
@@ -37,41 +37,27 @@ public class ImageAssets {
 	public static final SpriteDefinition PLAYER_SHOOT_UP = BILL_FACE_UP;
 	public static final SpriteDefinition PLAYER_DIE = BILL_DIE;
 
-	public static final Image STAGE4_MINION = new Image(
-			Launcher.class.getResourceAsStream("assets/Enemy/Minion_Minion.png"));
-	public static final Image JAVA_SKILL = new Image(Launcher.class.getResourceAsStream("assets/Enemy/Java_Skill.png"));
+	public static final Image STAGE4_MINION = ResourceUtils.loadImage("assets/Enemy/Minion_Minion.png");
+	public static final Image JAVA_SKILL = ResourceUtils.loadImage("assets/Enemy/Java_Skill.png");
 
-	public static final Image JAVA_IDLE = new Image(
-			Launcher.class.getResourceAsStream("assets/Boss/Boss2/JAVA_IDLE.png"));
-	public static final Image DESTROYED_JAVA = new Image(
-			Launcher.class.getResourceAsStream("assets/Boss/Boss2/JAVA_DEAD.png"));
+	public static final Image JAVA_IDLE = ResourceUtils.loadImage("assets/Boss/Boss2/JAVA_IDLE.png");
+	public static final Image DESTROYED_JAVA = ResourceUtils.loadImage("assets/Boss/Boss2/JAVA_DEAD.png");
 
-	public static final Image BOSS1_GATE_BROKEN = new Image(
-			Launcher.class.getResourceAsStream("assets/Boss/Boss1/gate_broken.png"));
-	public static final Image BOSS1_TURRET_SHOOT = new Image(
-			Launcher.class.getResourceAsStream("assets/Boss/Boss1/turret_shoot.png"));
-	public static final Image BOSS1_TURRET_BROKEN = new Image(
-			Launcher.class.getResourceAsStream("assets/Boss/Boss1/turret_broken.png"));
+	public static final Image BOSS1_GATE_BROKEN = ResourceUtils.loadImage("assets/Boss/Boss1/gate_broken.png");
+	public static final Image BOSS1_TURRET_SHOOT = ResourceUtils.loadImage("assets/Boss/Boss1/turret_shoot.png");
+	public static final Image BOSS1_TURRET_BROKEN = ResourceUtils.loadImage("assets/Boss/Boss1/turret_broken.png");
 
-	public static final Image EXPLOSION_IMG = new Image(
-			Launcher.class.getResourceAsStream("assets/Effects/explosionSprite.png"));
+	public static final Image EXPLOSION_IMG = ResourceUtils.loadImage("assets/Effects/explosionSprite.png");
 
 	// Bullet sprites
-	public static final Image BULLET_IMAGE = new Image(
-			Launcher.class.getResourceAsStream("assets/Item/Entities/Bullet.png"));
-	public static final Image LASER_IMAGE = new Image(
-			Launcher.class.getResourceAsStream("assets/Item/Entities/Laser.png"));
-	public static final Image CANNONBALL_IMAGE = new Image(
-			Launcher.class.getResourceAsStream("assets/Item/Entities/Cannonball.png"));
+	public static final Image BULLET_IMAGE = ResourceUtils.loadImage("assets/Item/Entities/Bullet.png");
+	public static final Image LASER_IMAGE = ResourceUtils.loadImage("assets/Item/Entities/Laser.png");
+	public static final Image CANNONBALL_IMAGE = ResourceUtils.loadImage("assets/Item/Entities/Cannonball.png");
+	public static final Image BOSS3_BULLET_IMAGE = ResourceUtils.loadImage("assets/Item/Entities/Boss3Bullet.png");
 
-	public static final Image MAIN_MENU = new Image(
-			Launcher.class.getResourceAsStream("assets/Backgrounds/MainMenu.png"));
-	public static final Image SECOND_STAGE = new Image(
-			Launcher.class.getResourceAsStream("assets/Backgrounds/Stage2.png"));
-	public static final Image FIRST_STAGE = new Image(
-			Launcher.class.getResourceAsStream("assets/Backgrounds/Stage1.png"));
-	public static final Image THIRD_STAGE_BOSS_IDLE = new Image(
-			Launcher.class.getResourceAsStream("assets/Backgrounds/Stage3bidle.png"));
-	public static final Image THIRD_STAGE_BOSS_DIE = new Image(
-			Launcher.class.getResourceAsStream("assets/Backgrounds/Stage3bossdie.png"));
+	public static final Image MAIN_MENU = ResourceUtils.loadImage("assets/Backgrounds/MainMenu.png");
+	public static final Image SECOND_STAGE = ResourceUtils.loadImage("assets/Backgrounds/Stage2.png");
+	public static final Image FIRST_STAGE = ResourceUtils.loadImage("assets/Backgrounds/Stage1.png");
+	public static final Image THIRD_STAGE_BOSS_IDLE = ResourceUtils.loadImage("assets/Backgrounds/Stage3bidle.png");
+	public static final Image THIRD_STAGE_BOSS_DIE = ResourceUtils.loadImage("assets/Boss/Boss3/Stage3bossdie.png");
 }

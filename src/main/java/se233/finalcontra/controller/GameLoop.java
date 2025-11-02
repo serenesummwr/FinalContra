@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
-import se233.finalcontra.Launcher;
+import se233.finalcontra.exception.LoopInterruptedException;
 import se233.finalcontra.model.Bullet;
 import se233.finalcontra.model.Enemy;
 import se233.finalcontra.model.Enums.EnemyType;
@@ -17,6 +17,7 @@ import se233.finalcontra.model.Player;
 import se233.finalcontra.model.SpriteDefinition;
 import se233.finalcontra.model.Enums.PlayerState;
 import se233.finalcontra.model.Enums.ShootingDirection;
+import se233.finalcontra.util.ResourceUtils;
 import se233.finalcontra.view.PauseMenu;
 import se233.finalcontra.view.GameStages.GameStage;
 
@@ -310,7 +311,7 @@ public class GameLoop implements Runnable{
 	}
 
 	public Image getimage(String path){
-		return new Image(Launcher.class.getResourceAsStream(path));
+		return ResourceUtils.loadImage(path);
 	}
 
 	public static void addScore(int addition) {
@@ -336,35 +337,49 @@ public class GameLoop implements Runnable{
 		logger.debug("Player {}", action);
 	}	
 
+	private void sleepForNextFrame(float elapsedTime) {
+		long sleepDuration = calculateSleepDuration(elapsedTime);
+		if (sleepDuration <= 0) {
+			return;
+		}
+		try {
+			Thread.sleep(sleepDuration);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new LoopInterruptedException("Game loop interrupted during sleep", e);
+		}
+	}
+
+	private long calculateSleepDuration(float elapsedTime) {
+		float remaining = elapsedTime < interval
+				? interval - elapsedTime
+				: interval - (interval % elapsedTime);
+		return (long) Math.max(0, remaining);
+	}
 
 
 	@Override
 	public void run() {
-		while (running) {
-			float startTime = System.currentTimeMillis();
-			Platform.runLater(() -> {
-				if (isPaused) return;
-				update(gameStage.getPlayer());
-				updateAnimation(gameStage.getPlayer());
-				for (Enemy e : new ArrayList<>(gameStage.getEnemies())) {
-				    updateEnemyAnimation(e);
-				}
-			});
+		try {
+			while (running) {
+				float startTime = System.currentTimeMillis();
+				Platform.runLater(() -> {
+					if (isPaused) {
+						return;
+					}
+					update(gameStage.getPlayer());
+					updateAnimation(gameStage.getPlayer());
+					for (Enemy enemy : new ArrayList<>(gameStage.getEnemies())) {
+						updateEnemyAnimation(enemy);
+					}
+				});
 
-			float elapsedTime = System.currentTimeMillis() - startTime;
-			if (elapsedTime < interval) {
-				try {
-					Thread.sleep((long) (interval- elapsedTime));
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			} else {
-				try {
-					Thread.sleep((long) (interval - (interval % elapsedTime)));
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				float elapsedTime = System.currentTimeMillis() - startTime;
+				sleepForNextFrame(elapsedTime);
 			}
+		} catch (LoopInterruptedException e) {
+			logger.warn("Stopping game loop after interruption", e);
+			running = false;
 		}
 	}
 }

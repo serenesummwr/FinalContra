@@ -8,6 +8,7 @@ import se233.finalcontra.model.Enums.ShootingDirection;
 import se233.finalcontra.view.GameStages.GameStage;
 import se233.finalcontra.view.GameStages.SecondStage;
 import se233.finalcontra.view.GameStages.FirstStage;
+import se233.finalcontra.view.GameStages.ThirdStage;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
@@ -19,9 +20,11 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
 import se233.finalcontra.Launcher;
+import se233.finalcontra.exception.LoopInterruptedException;
 import se233.finalcontra.model.*;
 import se233.finalcontra.model.Boss.FirstStageBoss;
 import se233.finalcontra.model.Boss.JavaBoss;
+import se233.finalcontra.model.Boss.ThirdBoss;
 
 public class DrawingLoop implements Runnable {	
 	public static List<Effect> effects = new ArrayList<>();
@@ -117,8 +120,7 @@ public class DrawingLoop implements Runnable {
 			if (!shouldRemove
 					&& bullet.getOwner() == BulletOwner.PLAYER
 					&& gameStage instanceof FirstStage
-					&& gameStage.getBoss() instanceof FirstStageBoss) {
-				FirstStageBoss stageFourBoss = (FirstStageBoss) gameStage.getBoss();
+					&& gameStage.getBoss() instanceof FirstStageBoss stageFourBoss) {
 				if (!stageFourBoss.isDefeated()
 						&& stageFourBoss.getHitboxBounds().intersects(bullet.getBoundsInParent())) {
 					Effect explosion = new Effect(ImageAssets.EXPLOSION_IMG, 7, 7, 1,
@@ -126,6 +128,23 @@ public class DrawingLoop implements Runnable {
 					effects.add(explosion);
 					Platform.runLater(() -> gameStage.getChildren().add(explosion));
 					stageFourBoss.applyDamage(bullet.getDamage());
+					if (bullet.consumeHit()) {
+						shouldRemove = true;
+					}
+				}
+			}
+
+			if (!shouldRemove
+					&& bullet.getOwner() == BulletOwner.PLAYER
+					&& gameStage instanceof ThirdStage
+					&& gameStage.getBoss() instanceof ThirdBoss stageThreeBoss) {
+				if (!stageThreeBoss.isDefeated()
+						&& stageThreeBoss.getHitboxBounds().intersects(bullet.getBoundsInParent())) {
+					Effect explosion = new Effect(ImageAssets.EXPLOSION_IMG, 7, 7, 1,
+							bullet.getxPos() - 64, bullet.getyPos() - 128, 256, 256);
+					effects.add(explosion);
+					Platform.runLater(() -> gameStage.getChildren().add(explosion));
+					stageThreeBoss.applyDamage(bullet.getDamage());
 					if (bullet.consumeHit()) {
 						shouldRemove = true;
 					}
@@ -316,7 +335,14 @@ public class DrawingLoop implements Runnable {
 					}
 				});
 			}
-		} 
+		} else if (gameStage instanceof ThirdStage) {
+			if (!GameStage.bossPhase) {
+				GameStage.bossPhase = true;
+			}
+			if (gameStage.getBoss() instanceof ThirdBoss thirdBoss) {
+				thirdBoss.update();
+			}
+		}
 	}
 	
 	private void updateEnemies() {
@@ -345,37 +371,50 @@ public class DrawingLoop implements Runnable {
 		running = false;
 	}
 	
+	private void sleepForNextFrame(float elapsedTime) {
+		long sleepDuration = calculateSleepDuration(elapsedTime);
+		if (sleepDuration <= 0) {
+			return;
+		}
+		try {
+			Thread.sleep(sleepDuration);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new LoopInterruptedException("Drawing loop interrupted during sleep", e);
+		}
+	}
+
+	private long calculateSleepDuration(float elapsedTime) {
+		float remaining = elapsedTime < interval
+				? interval - elapsedTime
+				: interval - (interval % elapsedTime);
+		return (long) Math.max(0, remaining);
+	}
+	
 
 
-    @Override
-    public void run() {
-        while (running) {
-            float startTime = System.currentTimeMillis();
-            Platform.runLater(() -> {
-            	if (GameLoop.isPaused || !running) {
-                    return;
-                }
-                checkAllCollisions(gameStage.getPlayer());
-                paint(gameStage.getPlayer());
-                paintBullet(GameLoop.bullets, GameLoop.shootingDir);
-                updateEnemies();
-                updateBoss();
-                paintEffects(DrawingLoop.effects);
-            });
-            float elapsedTime = System.currentTimeMillis() - startTime;
-            if (elapsedTime < interval) {
-            	try {
-            		Thread.sleep((long) (interval - elapsedTime));
-            	} catch (InterruptedException e) {
-            		e.printStackTrace();
-            	}
-            } else {
-            	try {
-            		Thread.sleep((long) (interval - (interval % elapsedTime)));
-            	} catch (InterruptedException e) {
-            		e.printStackTrace();
-            	}
-            }
-        }
-    }
+	@Override
+	public void run() {
+		try {
+			while (running) {
+				float startTime = System.currentTimeMillis();
+				Platform.runLater(() -> {
+					if (GameLoop.isPaused || !running) {
+						return;
+					}
+					checkAllCollisions(gameStage.getPlayer());
+					paint(gameStage.getPlayer());
+					paintBullet(GameLoop.bullets, GameLoop.shootingDir);
+					updateEnemies();
+					updateBoss();
+					paintEffects(DrawingLoop.effects);
+				});
+				float elapsedTime = System.currentTimeMillis() - startTime;
+				sleepForNextFrame(elapsedTime);
+			}
+		} catch (LoopInterruptedException e) {
+			running = false;
+			GameLoop.logger.warn("Stopping drawing loop after interruption", e);
+		}
+	}
 }

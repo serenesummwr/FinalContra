@@ -89,14 +89,33 @@ public class Bullet extends Pane {
 				sprite.setFitHeight(36);
 			}
 		} else {
-			sprite = new SpriteAnimation(ImageAssets.CANNONBALL_IMAGE, 1, 1, 1, 0, 0, 32, 32);
-			sprite.setFitHeight(32);
-			sprite.setFitWidth(32);
+			if (this.type == BulletType.BOSS3) {
+				int frameWidth = (int) Math.max(1, ImageAssets.BOSS3_BULLET_IMAGE.getWidth());
+				int frameHeight = (int) Math.max(1, ImageAssets.BOSS3_BULLET_IMAGE.getHeight());
+				sprite = new SpriteAnimation(ImageAssets.BOSS3_BULLET_IMAGE, 1, 1, 1, 0, 0, frameWidth, frameHeight);
+				sprite.setPreserveRatio(true);
+				sprite.setFitWidth(56);
+				sprite.setFitHeight(56);
+				applyBoss3Effects();
+			} else if (this.type == BulletType.JAVA_ORB) {
+				int frameWidth = (int) Math.max(1, ImageAssets.JAVA_SKILL.getWidth());
+				int frameHeight = (int) Math.max(1, ImageAssets.JAVA_SKILL.getHeight());
+				sprite = new SpriteAnimation(ImageAssets.JAVA_SKILL, 1, 1, 1, 0, 0, frameWidth, frameHeight);
+				sprite.setPreserveRatio(true);
+				sprite.setFitWidth(72);
+				sprite.setFitHeight(72);
+				applyJavaOrbEffects();
+			} else {
+				sprite = new SpriteAnimation(ImageAssets.CANNONBALL_IMAGE, 1, 1, 1, 0, 0, 32, 32);
+				sprite.setFitHeight(32);
+				sprite.setFitWidth(32);
+			}
 		}
 		
 		this.getChildren().add(sprite);
 		this.setWidth(sprite.getFitWidth());
 		this.setHeight(sprite.getFitHeight());
+		alignSpriteToVelocity();
 	}
 	
 	// Method สำหรับอัปเดตแอนิเมชันของกระสุน
@@ -122,6 +141,12 @@ public class Bullet extends Pane {
 				this.velocityX = this.velocity.x;
 				this.velocityY = this.velocity.y;
 			}
+		} else if (this.type == BulletType.BOSS3) {
+			this.damage = 800;
+			this.remainingHits = 1;
+		} else if (this.owner == BulletOwner.ENEMY && this.type == BulletType.JAVA_ORB) {
+			this.damage = 900;
+			this.remainingHits = 1;
 		}
 	}
 
@@ -131,6 +156,33 @@ public class Bullet extends Pane {
 		Glow glow = new Glow(0.85);
 		glow.setInput(aura);
 		sprite.setEffect(glow);
+	}
+
+	private void applyBoss3Effects() {
+		DropShadow aura = new DropShadow(30, Color.CRIMSON);
+		aura.setSpread(0.65);
+		aura.setRadius(35);
+		Glow glow = new Glow(0.75);
+		glow.setInput(aura);
+		sprite.setEffect(glow);
+	}
+
+	private void applyJavaOrbEffects() {
+		DropShadow aura = new DropShadow(28, Color.DODGERBLUE);
+		aura.setSpread(0.55);
+		aura.setRadius(30);
+		Glow glow = new Glow(0.82);
+		glow.setInput(aura);
+		sprite.setEffect(glow);
+	}
+
+	private void alignSpriteToVelocity() {
+		Vector2D vel = this.velocity != null ? this.velocity : new Vector2D(velocityX, velocityY);
+		if (vel.getLength() == 0 || sprite == null) {
+			return;
+		}
+		double angle = Math.toDegrees(Math.atan2(vel.y, vel.x));
+		sprite.setRotate(angle);
 	}
 
 	private Vector2D calculateVelocity(int speedX, int speedY, ShootingDirection direction) {

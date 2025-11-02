@@ -7,7 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import se233.finalcontra.Launcher;
+import se233.finalcontra.util.ResourceUtils;
 
 /**
  * Helper to load sprite sheets and normalise their frames for animation.
@@ -18,7 +18,7 @@ public final class SpriteSheetFactory {
 
 	public static SpriteDefinition loadBillSprite(String resourcePath, int targetFrameWidth, int targetFrameHeight,
 			long frameDurationNanos) {
-		Image original = new Image(Launcher.class.getResourceAsStream(resourcePath));
+		Image original = ResourceUtils.loadImage(resourcePath);
 		PixelReader reader = original.getPixelReader();
 		if (reader == null) {
 			throw new IllegalArgumentException("Unable to read sprite resource: " + resourcePath);

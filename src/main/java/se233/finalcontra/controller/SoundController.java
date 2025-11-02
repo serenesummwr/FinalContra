@@ -1,7 +1,7 @@
 package se233.finalcontra.controller;
 
 import javafx.scene.media.AudioClip;
-import se233.finalcontra.Launcher;
+import se233.finalcontra.util.ResourceUtils;
 
 public class SoundController {
 	private static SoundController instance;
@@ -24,12 +24,8 @@ public class SoundController {
 	private AudioClip blockHitSound;
 
 	private static AudioClip loadClip(String path) {
-		var url = Launcher.class.getResource(path);
-		if (url == null) {
-			System.err.println("[SoundController] Missing resource: " + path);
-			return null;
-		}
-		return new AudioClip(url.toString());
+		// Let MissingAssetException propagate to the global handler in Launcher
+		return ResourceUtils.loadAudioClip(path);
 	}
 	
     public void stopAllSounds() {

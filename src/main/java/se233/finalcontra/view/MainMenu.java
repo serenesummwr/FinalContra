@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import se233.finalcontra.Launcher;
 import se233.finalcontra.controller.SoundController;
 import se233.finalcontra.model.ImageAssets;
+import se233.finalcontra.util.ResourceUtils;
 import se233.finalcontra.view.GameStages.GameStage;
 import se233.finalcontra.view.tools.HitboxCropTool;
 
@@ -34,7 +35,7 @@ public class MainMenu extends AnchorPane {
 		Button exitButton = drawExitButton();
 		levelList = drawLevelListPane();
 		levelPane = new Pane(levelList);
-		String style = Launcher.class.getResource("styles/style.css").toString();
+		String style = ResourceUtils.requireResource("styles/style.css").toExternalForm();
 		this.getStylesheets().add(style);
 		buttonBox.getChildren().addAll(startButton, selectStageButton, cropToolButton, exitButton);
 		widthProperty().addListener((obs, oldVal, newVal) -> centerMenu(buttonBox));

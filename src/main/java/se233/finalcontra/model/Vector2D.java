@@ -36,4 +36,12 @@ public class Vector2D {
     public float getLength() {
         return (float) Math.sqrt(x * x + y * y);
     }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
 }

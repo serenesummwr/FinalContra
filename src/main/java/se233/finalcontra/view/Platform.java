@@ -5,7 +5,7 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-import se233.finalcontra.Launcher;
+import se233.finalcontra.util.ResourceUtils;
 
 public class Platform extends Rectangle {
 	private static final int PLATFORM_HEIGHT = 5;
@@ -23,7 +23,7 @@ public class Platform extends Rectangle {
 		this.width = width;
 		this.xPos = xPos;
 		this.yPos = yPos;	
-		this.platformImg = new Image(Launcher.class.getResourceAsStream("assets/Platform.png"));
+		this.platformImg = ResourceUtils.loadImage("assets/Platform.png");
 		this.isGround = isGround;
 		setWidth(width);
 		setHeight(PLATFORM_HEIGHT);

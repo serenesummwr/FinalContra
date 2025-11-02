@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import se233.finalcontra.Launcher;
 import se233.finalcontra.controller.GameLoop;
+import se233.finalcontra.util.ResourceUtils;
 import se233.finalcontra.view.GameStages.GameStage;
 
 public class PauseMenu extends VBox {
@@ -42,7 +43,7 @@ public class PauseMenu extends VBox {
 		continueButton.setPrefSize(200, 50);
 		restartButton.setPrefSize(200, 50);
 		exitButton.setPrefSize(200, 50);
-		this.getStylesheets().add(Launcher.class.getResource("Styles/pausemenu.css").toString());
+		this.getStylesheets().add(ResourceUtils.requireResource("Styles/pausemenu.css").toExternalForm());
 
 		getChildren().addAll(text, continueButton, restartButton, exitButton);
 	}
