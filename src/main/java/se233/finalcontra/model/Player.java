@@ -198,6 +198,7 @@ public class Player extends Pane {
 				alert.getButtonTypes().setAll(retry, quit);
 				Optional<ButtonType> result = alert.showAndWait();
 				if (result.get() == retry) {
+					GameLoop.prepareScoreReset();
 					Launcher.changeStage(Launcher.currentStageIndex);
 				} else {
 					Launcher.exitToMenu();

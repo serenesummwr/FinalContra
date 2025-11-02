@@ -31,6 +31,7 @@ public class JavaBoss extends Boss {
     private static final int ORB_ENRAGED_COUNT = 12;
     private static final double ORB_SPEED = 5.8;
     private static final double ORB_ENRAGED_SPEED = 7.4;
+    private static final int DEFEAT_SCORE = 8000;
 
     private final GameStage gameStage;
     private final Enemy head;
@@ -38,6 +39,7 @@ public class JavaBoss extends Boss {
 
     private boolean spawned = false;
     private boolean enraged = false;
+    private boolean defeatScoreAwarded = false;
     private int framesAlive = 0;
     private int enemyTimer = 0;
     private int spawnAnimationTimer = 0;
@@ -74,6 +76,10 @@ public class JavaBoss extends Boss {
         }
 
         if (!head.isAlive()) {
+            if (!defeatScoreAwarded) {
+                GameLoop.addScore(DEFEAT_SCORE);
+                defeatScoreAwarded = true;
+            }
             setState(BossState.DEFEATED);
             return;
         }

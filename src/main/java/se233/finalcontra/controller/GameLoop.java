@@ -31,6 +31,7 @@ public class GameLoop implements Runnable{
 	private float interval;
 	private boolean running;
 	private static int score;
+	private static boolean resetScoreOnNextStart = true;
 	
 	public static boolean isPaused = false;
 	public static boolean canPlayProneSound = true;
@@ -38,7 +39,10 @@ public class GameLoop implements Runnable{
 	public static List<Bullet> bullets = new ArrayList<Bullet>();
 	public static List<Enemy> enemies = new ArrayList<Enemy>();
 	public GameLoop(GameStage gameStage) {
-		score = 0;
+		if (resetScoreOnNextStart) {
+			score = 0;
+			resetScoreOnNextStart = false;
+		}
 		pauseMenu = new PauseMenu();
 		pauseMenu.setVisible(false);
 		gameStage.getChildren().add(pauseMenu);
@@ -319,6 +323,15 @@ public class GameLoop implements Runnable{
 		traceScore(addition);
 	}
 	public static int getScore() { return score; }
+
+	public static void prepareScoreReset() {
+		resetScoreOnNextStart = true;
+	}
+
+	public static void resetScore() {
+		score = 0;
+		resetScoreOnNextStart = false;
+	}
 	
 	public void stop() {
 		running = false;

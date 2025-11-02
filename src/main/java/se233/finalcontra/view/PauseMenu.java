@@ -27,6 +27,7 @@ public class PauseMenu extends VBox {
 		});
 		restartButton = new Button("Restart");
 		restartButton.setOnAction(e -> {
+			GameLoop.prepareScoreReset();
 			Launcher.changeStage(Launcher.currentStageIndex);
 		});
 		exitButton = new Button("Exit");

@@ -4,11 +4,13 @@ import javafx.geometry.Bounds;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import se233.finalcontra.controller.GameLoop;
 import se233.finalcontra.model.ImageAssets;
 import se233.finalcontra.model.FirstStageTurret;
 
 public class FirstStageBoss extends Boss {
     private static final int DEFAULT_MAX_HEALTH = 3000;
+    private static final int DEFEAT_SCORE = 5000;
 
     private final Rectangle hitboxOutline;
     private final ImageView brokenGateImage;
@@ -70,6 +72,7 @@ public class FirstStageBoss extends Boss {
             return;
         }
         gateDisplayed = true;
+        GameLoop.addScore(DEFEAT_SCORE);
         outlineVisible = false;
         hitboxOutline.setVisible(false);
         brokenGateImage.setVisible(true);

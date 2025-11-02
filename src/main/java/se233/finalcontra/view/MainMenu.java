@@ -10,6 +10,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import se233.finalcontra.Launcher;
+import se233.finalcontra.controller.GameLoop;
 import se233.finalcontra.controller.SoundController;
 import se233.finalcontra.model.ImageAssets;
 import se233.finalcontra.util.ResourceUtils;
@@ -52,6 +53,7 @@ public class MainMenu extends AnchorPane {
 		levelList.setPrefWidth(200);
 		showLevelList(false);
 		startButton.setOnAction(e -> {
+			GameLoop.prepareScoreReset();
 			Launcher.changeStage(0);
 		});
 		selectStageButton.setOnAction(e -> {
@@ -118,14 +120,17 @@ public class MainMenu extends AnchorPane {
 		stage1.setId("stageButton");
 		stage2.setId("stageButton");
 		stage1.setOnAction(event -> {
+			GameLoop.prepareScoreReset();
 			Launcher.changeStage(0);
 			showLevelList(false);
 		});
 		stage2.setOnAction(event -> {
+			GameLoop.prepareScoreReset();
 			Launcher.changeStage(1);
 			showLevelList(false);
 		});
 		stage3.setOnAction(event -> {
+			GameLoop.prepareScoreReset();
 			Launcher.changeStage(2);
 			showLevelList(false);
 		});

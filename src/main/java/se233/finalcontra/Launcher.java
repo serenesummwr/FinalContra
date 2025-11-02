@@ -212,23 +212,25 @@ public class Launcher extends Application {
             fadeOut.setToValue(1);
 
             fadeOut.setOnFinished(e -> {
+                GameLoop.prepareScoreReset();
+                SoundController.getInstance().stopAllSounds();
+                if (GameLoop.isPaused) {
+                    GameLoop.pause(); // Unpause the game
+                }
+                if (currentGameLoop != null) {
+                    currentGameLoop.stop();
+                    currentGameThread = null;
+                }
+                if (currentDrawingLoop != null) {
+                    currentDrawingLoop.stop();
+                    currentDrawingThread = null;
+                }
 
-        		SoundController.getInstance().stopAllSounds();
-                if (GameLoop.isPaused) GameLoop.pause(); // Unpause the game
-            	if (currentGameLoop != null) {
-            		currentGameLoop.stop();
-            		currentGameThread = null;
-            	}
-            	if (currentDrawingLoop != null) {
-            		currentDrawingLoop.stop();
-            		currentDrawingThread = null;
-        	}
-        	
-        	currentStage = null;
-            primaryStage.setScene(menuScene);
-            currentScene = menuScene;
-                
-        		Rectangle fadeInOverlay = new Rectangle(0, 0, GameStage.WIDTH, GameStage.HEIGHT);
+                currentStage = null;
+                primaryStage.setScene(menuScene);
+                currentScene = menuScene;
+
+                Rectangle fadeInOverlay = new Rectangle(0, 0, GameStage.WIDTH, GameStage.HEIGHT);
                 fadeInOverlay.setFill(Color.BLACK);
                 fadeInOverlay.setOpacity(0);
 

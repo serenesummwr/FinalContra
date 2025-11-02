@@ -17,6 +17,7 @@ import se233.finalcontra.view.GameStages.GameStage;
 
 public class ThirdBoss extends Boss {
     private static final int DEFAULT_MAX_HEALTH = 25000;
+    private static final int DEFEAT_SCORE = 12000;
     private static final double TARGETED_BULLET_SPEED = 9.0;
     private static final double RING_BULLET_SPEED = 9.0;
     private static final double RAIN_BULLET_SPEED = 6.5;
@@ -279,6 +280,7 @@ public class ThirdBoss extends Boss {
             return;
         }
         defeatNotified = true;
+        GameLoop.addScore(DEFEAT_SCORE);
         activePattern = null;
         Platform.runLater(onDefeatedCallback);
     }

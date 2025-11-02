@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import se233.finalcontra.controller.GameLoop;
 import se233.finalcontra.view.PauseMenu;
 import se233.finalcontra.view.Platform;
 import se233.finalcontra.model.Bullet;
@@ -39,12 +40,13 @@ public abstract class GameStage extends Pane {
 	}
 	
 	public void drawScore() {
-		scoreLabel = new Label("Score: 000000");
+		scoreLabel = new Label();
 		scoreLabel.setStyle("-fx-font-weight: bold;"
 				+ "-fx-font-size: 2em;");
 		scoreLabel.setTextFill(Color.WHITE);
 		scoreLabel.setLayoutX(WIDTH - 250);
 		scoreLabel.setLayoutY(40);
+		updateScoreLabel();
 	}
 	
 	public void drawLives() {
@@ -66,6 +68,13 @@ public abstract class GameStage extends Pane {
 	public Label getLivesLabel() { return livesLabel;}
 	public abstract List<Enemy> getEnemies();
 	public abstract List<Bullet> getBullets();
+
+	protected void updateScoreLabel() {
+		if (scoreLabel == null) {
+			return;
+		}
+		scoreLabel.setText("Score: " + String.format("%06d", Math.max(0, GameLoop.getScore())));
+	}
 	
 	public void setPlatformOutlineVisible(boolean visible) {
 		platformOutlineVisible = visible;
