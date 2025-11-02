@@ -109,6 +109,8 @@ public class MainMenu extends AnchorPane {
 	public VBox drawLevelListPane() {
 		Button stage1 = new Button("Level 1");
 		Button stage2 = new Button("Level 2");
+		Button stage3 = new Button("Level 3");
+
 		VBox stageList = new VBox(5);
 		stageList.setAlignment(Pos.CENTER);
 		stageList.getStyleClass().add("stage-selector");
@@ -122,8 +124,12 @@ public class MainMenu extends AnchorPane {
 			Launcher.changeStage(1);
 			showLevelList(false);
 		});
+		stage3.setOnAction(event -> {
+			Launcher.changeStage(2);
+			showLevelList(false);
+		});
 		
-		stageList.getChildren().addAll(stage1, stage2);
+		stageList.getChildren().addAll(stage1, stage2, stage3);
 		return stageList;
 	}
 

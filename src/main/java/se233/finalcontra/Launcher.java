@@ -15,6 +15,7 @@ import se233.finalcontra.controller.GameLoop;
 import se233.finalcontra.controller.SoundController;
 import se233.finalcontra.controller.CheatManager;
 import se233.finalcontra.model.Boss.FirstStageBoss;
+import se233.finalcontra.view.GameStages.ThirdStage;
 import se233.finalcontra.view.MainMenu;
 import se233.finalcontra.view.GameStages.GameStage;
 import se233.finalcontra.view.GameStages.SecondStage;
@@ -75,6 +76,7 @@ public class Launcher extends Application {
 			GameStage gameStage = switch (index) {
 	    			case 0 -> new FirstStage();
 	    			case 1 -> new SecondStage();
+					case 2 -> new ThirdStage();
 				default -> throw new IllegalArgumentException("Unexpected value: " + index);
 			};
 				currentScene = new Scene(gameStage, GameStage.WIDTH, GameStage.HEIGHT);

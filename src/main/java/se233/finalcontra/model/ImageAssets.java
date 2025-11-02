@@ -70,4 +70,8 @@ public class ImageAssets {
 			Launcher.class.getResourceAsStream("assets/Backgrounds/Stage2.png"));
 	public static final Image FIRST_STAGE = new Image(
 			Launcher.class.getResourceAsStream("assets/Backgrounds/Stage1.png"));
+	public static final Image THIRD_STAGE_BOSS_IDLE = new Image(
+			Launcher.class.getResourceAsStream("assets/Backgrounds/Stage3bidle.png"));
+	public static final Image THIRD_STAGE_BOSS_DIE = new Image(
+			Launcher.class.getResourceAsStream("assets/Backgrounds/Stage3bossdie.png"));
 }
