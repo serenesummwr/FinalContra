@@ -158,7 +158,12 @@ public class FirstStageTurret extends Enemy {
             return;
         }
 
-    SoundController.getInstance().playBlockHitSound();
+        if (GameStage.totalMinions > 0) {
+            SoundController.getInstance().playBlockHitSound();
+            return;
+        }
+
+        SoundController.getInstance().playBlockHitSound();
         health -= damage;
 
         if (health <= 0) {

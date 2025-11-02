@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javafx.geometry.Bounds;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Alert.AlertType;
@@ -16,14 +17,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import se233.finalcontra.Launcher;
-import se233.finalcontra.controller.DrawingLoop;
 import se233.finalcontra.controller.GameLoop;
 import se233.finalcontra.controller.SoundController;
 import se233.finalcontra.controller.SpriteAnimation;
 import se233.finalcontra.model.Boss.Boss;
 import se233.finalcontra.model.Enums.BulletOwner;
 import se233.finalcontra.model.Enums.BulletType;
-import se233.finalcontra.model.Enums.EnemyType;
 import se233.finalcontra.model.Enums.PlayerState;
 import se233.finalcontra.model.Enums.ShootingDirection;
 import se233.finalcontra.view.Platform;
@@ -423,29 +422,33 @@ public class Player extends Pane {
 	}
 	
 	public void isCollided(GameStage gameStage, int xOffset) {
-		int bossX = gameStage.getBoss().getXPos();
-		int bossY = gameStage.getBoss().getYPos();
-		
-		boolean xAxisCollision = this.xPos + Player.width >= bossX - xOffset;
-		boolean yAxisCollision = this.yPos + Player.height >= bossY;
-		
-		if (xAxisCollision && yAxisCollision && respawnTimer <= 0) {
-			die();
-			Effect explosion = new Effect(ImageAssets.EXPLOSION_IMG, 8, 8, 1, bossX - 250, 100, 512, 512);
-			DrawingLoop.effects.add(explosion);
-			javafx.application.Platform.runLater(() -> gameStage.getChildren().add(explosion));
-			for (Enemy enemy: GameLoop.enemies) {
-				Boss boss = gameStage.getBoss();
-				if (enemy.getType() != EnemyType.WALL) {
-					enemy.takeDamage(10000, boss);
-				}
-			}
-			System.out.println(gameStage.getBoss().getWeakPoints());
-			SoundController.getInstance().playExplosionSound();
-		} else if (xAxisCollision) {
-			this.xPos = bossX - Player.width - xOffset;
+		Boss boss = gameStage.getBoss();
+		if (boss == null) {
+			return;
 		}
 
+		int barrierX = Math.max(0, boss.getXPos() - xOffset);
+		if (xPos + Player.width > barrierX) {
+			xPos = Math.max(0, barrierX - Player.width);
+			xVelocity = 0;
+			setTranslateX(xPos);
+		}
+
+		Bounds playerBounds = this.localToParent(hitBox.getBoundsInParent());
+		Bounds bossBounds = boss.getBoundsInParent();
+		if (bossBounds.isEmpty()) {
+			return;
+		}
+
+		if (!playerBounds.intersects(bossBounds)) {
+			return;
+		}
+
+		// Safety fallback: if we somehow overlap with the boss, push the player back instead of killing.
+		xPos = Math.max(0, barrierX - Player.width);
+		setTranslateX(xPos);
+		yVelocity = 0;
+		isFalling = false;
 	}
 	
 	public void enableKeys() {
