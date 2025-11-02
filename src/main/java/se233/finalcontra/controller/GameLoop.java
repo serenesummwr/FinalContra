@@ -9,6 +9,9 @@ import org.apache.logging.log4j.Logger;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import se233.finalcontra.Launcher;
+import se233.finalcontra.exception.GameStateException;
+import se233.finalcontra.exception.InvalidSpriteException;
+import se233.finalcontra.exception.ResourceLoadException;
 import se233.finalcontra.model.Bullet;
 import se233.finalcontra.model.Enemy;
 import se233.finalcontra.model.Enums.EnemyType;
@@ -20,7 +23,7 @@ import se233.finalcontra.model.Enums.ShootingDirection;
 import se233.finalcontra.view.PauseMenu;
 import se233.finalcontra.view.GameStages.GameStage;
 
-public class GameLoop implements Runnable{
+public class GameLoop implements Runnable {
 	public static ShootingDirection shootingDir;
 	public static final Logger logger = LogManager.getLogger(GameLoop.class);
 
@@ -30,18 +33,23 @@ public class GameLoop implements Runnable{
 	private float interval;
 	private boolean running;
 	private static int score;
-	
+
 	public static boolean isPaused = false;
 	public static boolean canPlayProneSound = true;
 
-	public static List<Bullet> bullets = new ArrayList<Bullet>();
-	public static List<Enemy> enemies = new ArrayList<Enemy>();
+	public static List<Bullet> bullets = new ArrayList<>();
+	public static List<Enemy> enemies = new ArrayList<>();
+
 	public GameLoop(GameStage gameStage) {
+		if (gameStage == null) {
+			throw new GameStateException("GameStage is null — cannot initialize GameLoop.");
+		}
+
 		score = 0;
 		pauseMenu = new PauseMenu();
 		pauseMenu.setVisible(false);
 		gameStage.getChildren().add(pauseMenu);
-		
+
 		this.gameStage = gameStage;
 		this.frameRate = 10;
 		this.interval = 1000 / frameRate;
@@ -50,13 +58,16 @@ public class GameLoop implements Runnable{
 	}
 
 	private void update(Player player) {
+		if (player == null) {
+			throw new GameStateException("Player object is null — cannot update game loop.");
+		}
+
 		boolean leftPressed = gameStage.getKeys().isPressed(player.getLeftKey());
 		boolean rightPressed = gameStage.getKeys().isPressed(player.getRightKey());
 		boolean upPressed = gameStage.getKeys().isPressed(player.getUpKey());
 		boolean downPressed = gameStage.getKeys().isPressed(player.getDownKey());
 		boolean jumpPressed = gameStage.getKeys().isPressed(player.getJumpKey());
-		
-		
+
 		if (isPaused || player.getState() == PlayerState.CHARGING || player.getState() == PlayerState.DIE) {
 			return;
 		}
@@ -109,7 +120,7 @@ public class GameLoop implements Runnable{
 			player.clearRunFrameHold();
 		} else if (downPressed && rightPressed) {
 			shootingDir = ShootingDirection.DOWN_RIGHT;
-			tracePlayerAction("Facing down right");			
+			tracePlayerAction("Facing down right");
 			player.setState(PlayerState.FACE_DOWN_SIDE);
 			player.clearRunFrameHold();
 		} else if (upPressed && leftPressed) {
@@ -119,28 +130,27 @@ public class GameLoop implements Runnable{
 			player.clearRunFrameHold();
 		} else if (downPressed && leftPressed) {
 			shootingDir = ShootingDirection.DOWN_LEFT;
-			tracePlayerAction("Facing down left");			
+			tracePlayerAction("Facing down left");
 			player.setState(PlayerState.FACE_DOWN_SIDE);
 			player.clearRunFrameHold();
 		} else {
-			// Set default direction while not pressing any key
 			shootingDir = shootingDir.toString().matches(".*RIGHT") ? ShootingDirection.RIGHT : ShootingDirection.LEFT;
 			PlayerState currentState = player.getState();
-		    if (currentState != PlayerState.PRONE && currentState != PlayerState.WALKSHOOT) {
-		        player.setState(PlayerState.IDLE);
-		    }
+			if (currentState != PlayerState.PRONE && currentState != PlayerState.WALKSHOOT) {
+				player.setState(PlayerState.IDLE);
+			}
 		}
 
 		if (player.getState() == PlayerState.IDLE && player.hasJustStoppedMovingHorizontally()) {
 			player.latchRunFrameForIdle();
 		}
-		
+
 		if (gameStage.getKeys().isJustPressed(player.getSwitchBulletKey())) {
 			player.toggleLaserMode();
 			String mode = player.isLaserMode() ? "LASER" : "NORMAL";
 			logger.debug("Player bullet mode switched to {}", mode);
 		}
-		
+
 		if (gameStage.getKeys().isJustPressed(player.getShootKey())) {
 			player.shoot(gameStage, shootingDir);
 			if (player.isProning()) {
@@ -150,22 +160,25 @@ public class GameLoop implements Runnable{
 				SpriteDefinition holdDefinition;
 				PlayerState holdPose;
 				switch (shootingDir) {
-				case UP -> {
-					holdDefinition = ImageAssets.PLAYER_SHOOT_UP;
-					holdPose = PlayerState.FACE_UP;
+					case UP -> {
+						holdDefinition = ImageAssets.PLAYER_SHOOT_UP;
+						holdPose = PlayerState.FACE_UP;
+					}
+					case UP_RIGHT, UP_LEFT -> {
+						holdDefinition = ImageAssets.PLAYER_SHOOT_UP_SIDE;
+						holdPose = PlayerState.FACE_UP_SIDE;
+					}
+					case DOWN_RIGHT, DOWN_LEFT -> {
+						holdDefinition = ImageAssets.PLAYER_FACE_DOWN_SIDE;
+						holdPose = PlayerState.FACE_DOWN_SIDE;
+					}
+					default -> {
+						holdDefinition = ImageAssets.PLAYER_WALK_SHOOT;
+						holdPose = (leftPressed || rightPressed) ? PlayerState.WALKSHOOT : PlayerState.SHOOTING;
+					}
 				}
-				case UP_RIGHT, UP_LEFT -> {
-					holdDefinition = ImageAssets.PLAYER_SHOOT_UP_SIDE;
-					holdPose = PlayerState.FACE_UP_SIDE;
-				}
-				case DOWN_RIGHT, DOWN_LEFT -> {
-					holdDefinition = ImageAssets.PLAYER_FACE_DOWN_SIDE;
-					holdPose = PlayerState.FACE_DOWN_SIDE;
-				}
-				default -> {
-					holdDefinition = ImageAssets.PLAYER_WALK_SHOOT;
-					holdPose = (leftPressed || rightPressed) ? PlayerState.WALKSHOOT : PlayerState.SHOOTING;
-				}
+				if (holdDefinition == null) {
+					throw new InvalidSpriteException("HoldDefinition sprite is missing for shooting direction: " + shootingDir);
 				}
 				player.beginShootingHold(holdDefinition);
 				player.setState(holdPose);
@@ -173,7 +186,7 @@ public class GameLoop implements Runnable{
 			}
 			tracePlayerAction("Shoot");
 		}
-		
+
 		if (jumpPressed && downPressed) {
 			player.dropDown();
 			tracePlayerAction("Drop from platform");
@@ -184,22 +197,28 @@ public class GameLoop implements Runnable{
 			tracePlayerAction("Jump");
 			player.cancelShootingHold();
 			player.clearRunFrameHold();
-		} 
-		
-		if (player.isProning()) {
-			canPlayProneSound = false;
-		} else {
-			canPlayProneSound = true;
 		}
 
+		canPlayProneSound = !player.isProning();
 		gameStage.getKeys().clear();
 	}
-	
+
 	public void updateAnimation(Player player) {
-		SpriteAnimation sprite = player.getImageView();
+		if (player == null) {
+			throw new GameStateException("Player is null in updateAnimation.");
+		}
+
+		var sprite = player.getImageView();
+		if (sprite == null) {
+			throw new InvalidSpriteException("Player sprite is null.");
+		}
+
 		PlayerState currentState = player.getState();
 
 		if (player.isDying()) {
+			if (ImageAssets.PLAYER_DIE == null) {
+				throw new InvalidSpriteException("PLAYER_DIE sprite missing in ImageAssets.");
+			}
 			sprite.changeSpriteSheet(ImageAssets.PLAYER_DIE);
 			sprite.tick();
 			player.clearRunFrameHold();
@@ -231,18 +250,12 @@ public class GameLoop implements Runnable{
 
 		if (player.isShootingHoldActive()) {
 			SpriteDefinition holdDefinition = player.getShootingHoldDefinition();
-			if (holdDefinition != null) {
-				sprite.changeSpriteSheet(holdDefinition);
+			if (holdDefinition == null) {
+				throw new InvalidSpriteException("Hold definition missing during shooting hold.");
 			}
+			sprite.changeSpriteSheet(holdDefinition);
 			if (player.shouldAdvanceShootingAnimation() && sprite.getFrameCount() > 0) {
-				int before = sprite.getCurrentFrameIndex();
 				sprite.tick();
-				if (sprite.isAtLastFrame()) {
-					player.markShootingAnimationCompleted();
-				} else if (sprite.getCurrentFrameIndex() < before) {
-					sprite.setFrameIndex(Math.max(0, sprite.getFrameCount() - 1));
-					player.markShootingAnimationCompleted();
-				}
 			}
 			if (player.shouldReleaseShootingHold()) {
 				player.finishShootingHold();
@@ -252,56 +265,26 @@ public class GameLoop implements Runnable{
 		}
 
 		switch (currentState) {
-		case FACE_DOWN_SIDE -> {
-			sprite.changeSpriteSheet(ImageAssets.PLAYER_FACE_DOWN_SIDE);
-			sprite.tick();
-			player.clearRunFrameHold();
-			return;
+			case FACE_DOWN_SIDE -> sprite.changeSpriteSheet(ImageAssets.PLAYER_FACE_DOWN_SIDE);
+			case FACE_UP_SIDE -> sprite.changeSpriteSheet(ImageAssets.PLAYER_SHOOT_UP_SIDE);
+			case FACE_UP -> sprite.changeSpriteSheet(ImageAssets.PLAYER_SHOOT_UP);
+			case WALKSHOOT -> sprite.changeSpriteSheet(ImageAssets.PLAYER_RUN);
+			case SHOOTING -> sprite.changeSpriteSheet(ImageAssets.PLAYER_WALK_SHOOT);
+			default -> sprite.changeSpriteSheet(ImageAssets.PLAYER_IDLE);
 		}
-		case FACE_UP_SIDE -> {
-			sprite.changeSpriteSheet(ImageAssets.PLAYER_SHOOT_UP_SIDE);
-			sprite.tick();
-			player.clearRunFrameHold();
-			return;
-		}
-		case FACE_UP -> {
-			sprite.changeSpriteSheet(ImageAssets.PLAYER_SHOOT_UP);
-			sprite.tick();
-			player.clearRunFrameHold();
-			return;
-		}
-		case WALKSHOOT -> {
-			sprite.changeSpriteSheet(ImageAssets.PLAYER_RUN);
-			if (player.consumePendingRunResume()) {
-				sprite.setFrameIndex(player.getLastRunFrameIndex());
-			}
-			sprite.tick();
-			player.captureRunFrameIndex();
-			return;
-		}
-		case SHOOTING -> {
-			sprite.changeSpriteSheet(ImageAssets.PLAYER_WALK_SHOOT);
-			sprite.tick();
-			player.clearRunFrameHold();
-			return;
-		}
-		default -> {
-		}
-		}
-
-		if (player.shouldHoldRunFrame() && player.hasRunHistory()) {
-			sprite.changeSpriteSheet(ImageAssets.PLAYER_RUN);
-			sprite.setFrameIndex(player.getLastRunFrameIndex());
-			return;
-		}
-
-		sprite.changeSpriteSheet(ImageAssets.PLAYER_IDLE);
+		sprite.tick();
 	}
-	
-	public void updateEnemyAnimation(Enemy enemy){
 
-		if (enemy.getType() == EnemyType.JAVAHEAD){
-			if (!enemy.isAlive()){
+	public void updateEnemyAnimation(Enemy enemy) {
+		if (enemy == null) {
+			throw new GameStateException("Enemy reference is null during animation update.");
+		}
+		if (enemy.getSprite() == null) {
+			throw new InvalidSpriteException("Enemy sprite is null.");
+		}
+
+		if (enemy.getType() == EnemyType.JAVAHEAD) {
+			if (!enemy.isAlive()) {
 				enemy.getSprite().changeSpriteSheet(ImageAssets.DESTROYED_JAVA, 1, 1, 1);
 			}
 		}
@@ -309,61 +292,67 @@ public class GameLoop implements Runnable{
 		enemy.getSprite().tick();
 	}
 
-	public Image getimage(String path){
-		return new Image(Launcher.class.getResourceAsStream(path));
+	public Image getimage(String path) {
+		try {
+			Image img = new Image(Launcher.class.getResourceAsStream(path));
+			if (img.isError()) {
+				throw new ResourceLoadException("Failed to load image: " + path);
+			}
+			return img;
+		} catch (Exception e) {
+			throw new ResourceLoadException("Error loading resource: " + path);
+		}
 	}
 
 	public static void addScore(int addition) {
 		score += addition;
 		traceScore(addition);
 	}
-	public static int getScore() { return score; }
-	
+
+	public static int getScore() {
+		return score;
+	}
+
 	public void stop() {
 		running = false;
 	}
-	
+
 	public static void pause() {
 		isPaused = !isPaused;
 		pauseMenu.setVisible(isPaused);
 	}
-	
+
 	public static void traceScore(int addition) {
 		logger.info("Score: {}+. Current score = {}", addition, score);
 	}
-	
+
 	public static void tracePlayerAction(String action) {
 		logger.debug("Player {}", action);
-	}	
-
-
+	}
 
 	@Override
 	public void run() {
 		while (running) {
 			float startTime = System.currentTimeMillis();
-			Platform.runLater(() -> {
-				if (isPaused) return;
-				update(gameStage.getPlayer());
-				updateAnimation(gameStage.getPlayer());
-				for (Enemy e : new ArrayList<>(gameStage.getEnemies())) {
-				    updateEnemyAnimation(e);
-				}
-			});
+			try {
+				Platform.runLater(() -> {
+					if (isPaused) return;
+					update(gameStage.getPlayer());
+					updateAnimation(gameStage.getPlayer());
+					for (Enemy e : new ArrayList<>(gameStage.getEnemies())) {
+						updateEnemyAnimation(e);
+					}
+				});
+			} catch (GameStateException | InvalidSpriteException | ResourceLoadException e) {
+				logger.error("GameLoop error: {}", e.getMessage());
+				e.printStackTrace();
+			}
 
 			float elapsedTime = System.currentTimeMillis() - startTime;
-			if (elapsedTime < interval) {
-				try {
-					Thread.sleep((long) (interval- elapsedTime));
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			} else {
-				try {
-					Thread.sleep((long) (interval - (interval % elapsedTime)));
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+			try {
+				Thread.sleep((long) Math.max(1, interval - elapsedTime));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}

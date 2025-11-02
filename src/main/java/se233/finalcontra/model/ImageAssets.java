@@ -73,5 +73,5 @@ public class ImageAssets {
 	public static final Image THIRD_STAGE_BOSS_IDLE = new Image(
 			Launcher.class.getResourceAsStream("assets/Backgrounds/Stage3bidle.png"));
 	public static final Image THIRD_STAGE_BOSS_DIE = new Image(
-			Launcher.class.getResourceAsStream("assets/Backgrounds/Stage3bossdie.png"));
+			Launcher.class.getResourceAsStream("assets/Boss/Boss3/Stage3bossdie.png"));
 }

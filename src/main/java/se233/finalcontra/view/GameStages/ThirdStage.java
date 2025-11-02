@@ -11,6 +11,7 @@ import se233.finalcontra.model.*;
 import se233.finalcontra.model.Boss.Boss;
 import se233.finalcontra.model.Boss.FirstStageBoss;
 // import se233.finalcontra.model.Boss.FirstStageBoss; // คอมเมนต์ออก
+import se233.finalcontra.model.Boss.ThirdBoss;
 import se233.finalcontra.view.Platform;
 // import se233.finalcontra.model.FirstStageMinion; // คอมเมนต์ออก
 // import se233.finalcontra.model.FirstStageTurret; // คอมเมนต์ออก
@@ -70,7 +71,7 @@ public class ThirdStage extends GameStage {
 
 
 
-        FirstStageBoss stageThreeBoss = new FirstStageBoss(bossX, bossY, bossWidth, bossHeight);
+        ThirdBoss stageThreeBoss = new ThirdBoss(bossX, bossY, bossWidth, bossHeight);
 
 
         boss = stageThreeBoss;
