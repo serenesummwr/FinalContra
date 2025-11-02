@@ -113,6 +113,8 @@ public class MinionEnemy extends Enemy {
 
 		boolean safeLandingAheadRight = hasSafeLandingAhead(true, platforms);
 		boolean safeLandingAheadLeft = hasSafeLandingAhead(false, platforms);
+		boolean safeDropAheadRight = hasSafeDropBelow(true, platforms);
+		boolean safeDropAheadLeft = hasSafeDropBelow(false, platforms);
 		JumpTarget jumpTargetRight = findJumpTarget(true, platforms, playerCenterX);
 		JumpTarget jumpTargetLeft = findJumpTarget(false, platforms, playerCenterX);
 
@@ -124,7 +126,7 @@ public class MinionEnemy extends Enemy {
 
 		if (playerInRange && playerBelow && isOnPlatform && dropIgnoreTimer == 0 && dropCooldownTimer == 0) {
 			boolean dropRight = horizontalDiff >= 0;
-			boolean safeDrop = dropRight ? safeLandingAheadRight : safeLandingAheadLeft;
+			boolean safeDrop = dropRight ? safeDropAheadRight : safeDropAheadLeft;
 			if (safeDrop) {
 				beginDropDown();
 				dropCooldownTimer = DROP_COOLDOWN_FRAMES;
@@ -502,6 +504,34 @@ public class MinionEnemy extends Enemy {
 			}
 
 			int landingY = findNextLandingY(checkX, platforms, footY - 4);
+			if (landingY == -1 || landingY > maxDropY) {
+				continue;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean hasSafeDropBelow(boolean movingRight, List<Platform> platforms) {
+		int footY = yPos + height;
+		int minDropY = footY + Math.max(12, height / 4);
+		int maxDropY = footY + SAFE_DROP_DISTANCE;
+
+		int[] sampleOffsets = new int[] {
+				Math.max(8, width / 3),
+				Math.max(12, (int) (width * 0.75)),
+				width + 24
+		};
+
+		for (int offset : sampleOffsets) {
+			int checkX = movingRight ? xPos + offset : xPos - offset;
+			if (checkX < 0 || checkX > GameStage.WIDTH) {
+				continue;
+			}
+
+			int landingY = findNextLandingY(checkX, platforms, minDropY);
 			if (landingY == -1 || landingY > maxDropY) {
 				continue;
 			}
