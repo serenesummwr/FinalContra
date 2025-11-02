@@ -14,14 +14,12 @@ public class SoundController {
 	private AudioClip proneSound;
 	private AudioClip winSound;
 	private AudioClip javaDieSound;
-	private AudioClip canDieSound;
 	private AudioClip javaAttackSound;
 	private AudioClip startTheme;
 	// Theme music used for all stages
 	private AudioClip minecraftTheme;
 	private AudioClip loseSound;
 	private AudioClip respawnSound;
-	private AudioClip dropDownSound;
 	private AudioClip laserSound;
 	private AudioClip blockHitSound;
 
@@ -44,13 +42,11 @@ public class SoundController {
         if (proneSound != null) proneSound.stop();
         if (winSound != null) winSound.stop();
         if (javaDieSound != null) javaDieSound.stop();
-        if (canDieSound != null) canDieSound.stop();
         if (javaAttackSound != null) javaAttackSound.stop();
         if (startTheme != null) startTheme.stop();
 		if (minecraftTheme != null) minecraftTheme.stop();
         if (loseSound != null) loseSound.stop();
         if (respawnSound != null) respawnSound.stop();
-        if (dropDownSound != null) dropDownSound.stop();
         if (laserSound != null) laserSound.stop();
 		if (blockHitSound != null) blockHitSound.stop();
     }
@@ -64,11 +60,9 @@ public class SoundController {
 		proneSound = loadClip("assets/Sounds/proneSound.mp3");
 		winSound = loadClip("assets/Sounds/winSound.mp3");
 		javaDieSound = loadClip("assets/Sounds/javaDieSound.mp3");
-		canDieSound = loadClip("assets/Sounds/flyingDieSound.mp3");
 		javaAttackSound = loadClip("assets/Sounds/javaAttackSound.mp3");
 		loseSound = loadClip("assets/Sounds/loseSound.mp3");
 		respawnSound = loadClip("assets/Sounds/respawnSound.mp3");
-		dropDownSound = loadClip("assets/Sounds/dropDownSound.mp3");
 		laserSound = loadClip("assets/Sounds/laser.mp3");
 		// Global theme for all stages
 		minecraftTheme = loadClip("assets/Sounds/minecraftSound.mp3");
@@ -123,10 +117,6 @@ public class SoundController {
 		if (javaDieSound != null) javaDieSound.play();
 	}
 	
-	public void playCanDieSound() {
-		if (canDieSound != null) canDieSound.play();
-	}
-	
 	public void playJavaAttackSound() {
 		if (javaAttackSound != null) javaAttackSound.play();
 	}
@@ -140,10 +130,6 @@ public class SoundController {
 	
 	public void playRespawnSound() {
 		if (respawnSound != null) respawnSound.play();
-	}
-	
-	public void playDropDownSound() {
-		if (dropDownSound != null) dropDownSound.play();
 	}
 
 	// Block hit sound (replaces metal hit)

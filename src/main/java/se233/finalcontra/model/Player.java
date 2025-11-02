@@ -238,7 +238,6 @@ public class Player extends Pane {
 			isFalling = true;
 			isJumping = false;
 			canDropDown = false;
-			SoundController.getInstance().playDropDownSound();
 		}
 	}
 	
